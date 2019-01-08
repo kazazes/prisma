@@ -39,7 +39,6 @@ def commonDockerImageSettings(imageName: String) = commonServerSettings ++ Seq(
       runShell(s"touch", s"$targetDir/start.sh")
       runShell("echo", "#!/usr/bin/env bash", ">>", s"$targetDir/start.sh")
       runShell("echo", "set -e", ">>", s"$targetDir/start.sh")
-      runShell("echo", "set -x", ">>", s"$targetDir/start.sh")
       runShell("echo", s".$targetDir/prerun_hook.sh", ">>", s"$targetDir/start.sh")
       runShell("echo", s".$targetDir/bin/${executableScriptName.value}", ">>" ,s"$targetDir/start.sh")
       runShell(s"chmod", "+x", s"$targetDir/start.sh")
