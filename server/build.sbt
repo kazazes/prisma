@@ -34,25 +34,28 @@ def commonDockerImageSettings(imageName: String) = commonServerSettings ++ Seq(
 
     new Dockerfile {
       from("alpine:latest")
-      runShell("sh", "-c",
-      """apk update && apk upgrade && \
-        apk add openjdk8 && \
+      runRaw(
+        """/sbin/apk update && /sbin/apk upgrade && \
+        /sbin/apk add openjdk8 && \
         mkdir /tmp/tmprt && \
         cd /tmp/tmprt && \
-        apk add zip && \
+        /sbin/apk add zip && \
         unzip -q /usr/lib/jvm/default-jvm/jre/lib/rt.jar && \
-        apk add zip && \
+        /sbin/apk add zip && \
         zip -q -r /tmp/rt.zip . && \
-        apk del zip && \
+        /sbin/apk del zip && \
+        apk add libstdc++ curl ca-certificates bash && \
         cd /tmp && \
         mv rt.zip /usr/lib/jvm/default-jvm/jre/lib/rt.jar && \
         rm -rf /tmp/tmprt /var/cache/apk/* bin/jjs bin/keytool bin/orbd bin/pack200 bin/policytool \
-        bin/rmid bin/rmiregistry bin/servertool bin/tnameserv bin/unpack200""")
+        bin/rmid bin/rmiregistry bin/servertool bin/tnameserv bin/unpack200"""
+      )
       copy(appDir, targetDir)
       copy(prerunHookFile , s"$targetDir/prerun_hook.sh")
       runShell(s"touch", s"$targetDir/start.sh")
       runShell("echo", "#!/usr/bin/env bash", ">>", s"$targetDir/start.sh")
       runShell("echo", "set -e", ">>", s"$targetDir/start.sh")
+      runShell("echo", "set -x", ">>", s"$targetDir/start.sh")
       runShell("echo", s".$targetDir/prerun_hook.sh", ">>", s"$targetDir/start.sh")
       runShell("echo", s".$targetDir/bin/${executableScriptName.value}", ">>" ,s"$targetDir/start.sh")
       runShell(s"chmod", "+x", s"$targetDir/start.sh")
