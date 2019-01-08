@@ -33,23 +33,7 @@ def commonDockerImageSettings(imageName: String) = commonServerSettings ++ Seq(
     val targetDir = "/app"
 
     new Dockerfile {
-      from("alpine:latest")
-      runRaw(
-        """apk update && apk upgrade && \
-        apk add openjdk8 && \
-        mkdir /tmp/tmprt && \
-        cd /tmp/tmprt && \
-        apk add zip && \
-        unzip -q /usr/lib/jvm/default-jvm/jre/lib/rt.jar && \
-        apk add zip && \
-        zip -q -r /tmp/rt.zip . && \
-        apk del zip && \
-        apk add libstdc++ curl ca-certificates bash && \
-        cd /tmp && \
-        mv rt.zip /usr/lib/jvm/default-jvm/jre/lib/rt.jar && \
-        rm -rf /tmp/tmprt /var/cache/apk/* bin/jjs bin/keytool bin/orbd bin/pack200 bin/policytool \
-        bin/rmid bin/rmiregistry bin/servertool bin/tnameserv bin/unpack200"""
-      )
+      from("openjdk:8-slim")
       copy(appDir, targetDir)
       copy(prerunHookFile , s"$targetDir/prerun_hook.sh")
       runShell(s"touch", s"$targetDir/start.sh")
