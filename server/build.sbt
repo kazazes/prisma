@@ -35,15 +35,15 @@ def commonDockerImageSettings(imageName: String) = commonServerSettings ++ Seq(
     new Dockerfile {
       from("alpine:latest")
       runRaw(
-        """/sbin/apk update && /sbin/apk upgrade && \
-        /sbin/apk add openjdk8 && \
+        """apk update && apk upgrade && \
+        apk add openjdk8 && \
         mkdir /tmp/tmprt && \
         cd /tmp/tmprt && \
-        /sbin/apk add zip && \
+        apk add zip && \
         unzip -q /usr/lib/jvm/default-jvm/jre/lib/rt.jar && \
-        /sbin/apk add zip && \
+        apk add zip && \
         zip -q -r /tmp/rt.zip . && \
-        /sbin/apk del zip && \
+        apk del zip && \
         apk add libstdc++ curl ca-certificates bash && \
         cd /tmp && \
         mv rt.zip /usr/lib/jvm/default-jvm/jre/lib/rt.jar && \
