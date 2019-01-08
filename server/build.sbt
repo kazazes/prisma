@@ -34,7 +34,8 @@ def commonDockerImageSettings(imageName: String) = commonServerSettings ++ Seq(
 
     new Dockerfile {
       from("alpine:latest")
-      runShell("""apk update && apk upgrade && \
+      runShell("sh", "-c",
+      """apk update && apk upgrade && \
         apk add openjdk8 && \
         mkdir /tmp/tmprt && \
         cd /tmp/tmprt && \
@@ -48,7 +49,6 @@ def commonDockerImageSettings(imageName: String) = commonServerSettings ++ Seq(
         rm -rf /tmp/tmprt /var/cache/apk/* bin/jjs bin/keytool bin/orbd bin/pack200 bin/policytool \
         bin/rmid bin/rmiregistry bin/servertool bin/tnameserv bin/unpack200""")
       copy(appDir, targetDir)
-      runShell("apk update -U && apk add libstdc++ curl ca-certificates bash")
       copy(prerunHookFile , s"$targetDir/prerun_hook.sh")
       runShell(s"touch", s"$targetDir/start.sh")
       runShell("echo", "#!/usr/bin/env bash", ">>", s"$targetDir/start.sh")
