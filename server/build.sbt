@@ -35,6 +35,7 @@ def commonDockerImageSettings(imageName: String) = commonServerSettings ++ Seq(
     new Dockerfile {
       from("openjdk:8-alpine")
       copy(appDir, targetDir)
+      runShell("apk -U upgrade && apk add libstdc++ curl ca-certificates bash")
       copy(prerunHookFile , s"$targetDir/prerun_hook.sh")
       runShell(s"touch", s"$targetDir/start.sh")
       runShell("echo", "#!/usr/bin/env bash", ">>", s"$targetDir/start.sh")
